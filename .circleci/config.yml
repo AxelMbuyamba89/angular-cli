@@ -168,7 +168,12 @@ jobs:
       - custom_attach_workspace
       - run:
           name: Validate Commit Messages
-          command: yarn -s admin validate-commits --base <<pipeline.git.base_revision>> --head <<pipeline.git.revision>>
+          command: |
+            if [[ -n "${CIRCLE_PR_NUMBER}" ]] || [[ -z "${CIRCLE_PULL_REQUEST}" ]] then
+              yarn -s admin validate-commits --base <<pipeline.git.base_revision>> --head <<pipeline.git.revision>>
+            else
+              yarn -s admin validate-commits
+            fi
       - run:
           name: Validate "do not submit" Commits
           command: yarn -s admin validate-do-not-submit --base <<pipeline.git.base_revision>> --head <<pipeline.git.revision>>
